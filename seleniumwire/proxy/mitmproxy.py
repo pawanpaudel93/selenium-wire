@@ -142,12 +142,15 @@ class MitmProxy:
 
         self.request_interceptor = None
         self.response_interceptor = None
+        try:
+            self._event_loop = asyncio.get_event_loop()
 
-        self._event_loop = asyncio.get_event_loop()
-
-        if self._event_loop.is_closed():
-            # The event loop may be closed if the server had previously
-            # been shutdown and then spun up again
+            if self._event_loop.is_closed():
+                # The event loop may be closed if the server had previously
+                # been shutdown and then spun up again
+                self._event_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(self._event_loop)
+        except:
             self._event_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self._event_loop)
 
